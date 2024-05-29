@@ -33,6 +33,16 @@ resource "aws_subnet" "private_subnet" {
   }
 }
 
+resource "aws_route_table_association" "pub_rt" {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_route_table_association" "pri_rt" {
+  subnet_id      = aws_subnet.private_subnet.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.vpc.id
 
