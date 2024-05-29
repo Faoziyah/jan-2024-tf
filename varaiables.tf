@@ -33,3 +33,9 @@ variable "private_subnet_cidr" {
   default     = "10.0.2.0/24"
   type        = string
 }
+
+variable "sg_ports" {
+  description = "sg ports"
+  default     = ["3000", "80", "443", "22"]
+  type        = list(string)
+}
