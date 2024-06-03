@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  profile = "tf-user"
+  region = "eu-west-2"
   default_tags {
     tags = {
       "Team"        = var.Team
