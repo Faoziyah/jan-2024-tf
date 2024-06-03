@@ -16,42 +16,42 @@ resource "aws_internet_gateway" "gw" {
 }
 
 resource "aws_subnet" "public_subnet" {
-  count=3
-  vpc_id     = aws_vpc.vpc.id
-  cidr_block = "${cidrsubnet(var.vpc_cidr,8, count.index)}"
+  count                   = 3
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = cidrsubnet(var.vpc_cidr, 8, count.index)
   map_public_ip_on_launch = "true"
   tags = {
     Name = "${local.public_subnet_name}_${count.index}"
   }
 }
- 
+
 
 resource "aws_subnet" "private_subnet" {
-  count=3
+  count      = 3
   vpc_id     = aws_vpc.vpc.id
-  cidr_block = "${cidrsubnet(var.vpc_cidr,6, count.index + 2)}"
+  cidr_block = cidrsubnet(var.vpc_cidr, 6, count.index + 2)
   tags = {
     Name = "${local.private_subnet_name}_${count.index}"
   }
 }
 
 resource "aws_subnet" "database" {
-count = 3
-vpc_id = aws_vpc.vpc.id
-cidr_block = "${cidrsubnet(var.vpc_cidr,4, count.index + 4)}"
-tags = {
-  Name = "dbsub_${count.index}"
-}
+  count      = 3
+  vpc_id     = aws_vpc.vpc.id
+  cidr_block = cidrsubnet(var.vpc_cidr, 4, count.index + 4)
+  tags = {
+    Name = "dbsub_${count.index}"
+  }
 
 }
 resource "aws_route_table_association" "pub_rt" {
-  count=3
+  count          = 3
   subnet_id      = element(aws_subnet.public_subnet.*.id, count.index)
   route_table_id = aws_route_table.public_rt.id
 }
 
 resource "aws_route_table_association" "pri_rt" {
-   count=3
+  count          = 3
   subnet_id      = element(aws_subnet.private_subnet.*.id, count.index)
   route_table_id = aws_route_table.private_rt.id
 }
@@ -82,15 +82,15 @@ resource "aws_route_table" "private_rt" {
   }
 }
 resource "aws_route_table" "database" {
-vpc_id = aws_vpc.vpc.id
-tags = {
-  Name= "database-route-database"
-}
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "database-route-database"
+  }
 }
 
 resource "aws_route_table_association" "database" {
-  count = 3
-  subnet_id = element(aws_subnet.database.*.id, count.index)
+  count          = 3
+  subnet_id      = element(aws_subnet.database.*.id, count.index)
   route_table_id = aws_route_table.database.id
 }
 
@@ -100,7 +100,7 @@ resource "aws_eip" "lb" {
 
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.lb.id
-  subnet_id      = element(aws_subnet.public_subnet.*.id, 0)
+  subnet_id     = element(aws_subnet.public_subnet.*.id, 0)
 
   tags = {
     Name = local.ngw_name
@@ -113,23 +113,23 @@ resource "aws_nat_gateway" "nat" {
 
 resource "aws_db_subnet_group" "db_sb_gp" {
   name       = "main"
-  subnet_ids = "${aws_subnet.database.*.id}"
+  subnet_ids = aws_subnet.database.*.id
   tags = {
     Name = "My DB subnet group"
   }
 }
 
 resource "aws_db_instance" "db-inst" {
-  identifier        = "my-mysql-db"
-  allocated_storage = 20
-  storage_type      = "gp2"
-  engine            = "mysql"
-  engine_version    = "8.0"
-  instance_class    = "db.t3.micro"
-  username          = "admin"
-  password          = "admin237"
-  parameter_group_name = "default.mysql8.0"
-  db_subnet_group_name = aws_db_subnet_group.db_sb_gp.name
+  identifier             = "my-mysql-db"
+  allocated_storage      = 20
+  storage_type           = "gp2"
+  engine                 = "mysql"
+  engine_version         = "8.0"
+  instance_class         = "db.t3.micro"
+  username               = "admin"
+  password               = "admin237"
+  parameter_group_name   = "default.mysql8.0"
+  db_subnet_group_name   = aws_db_subnet_group.db_sb_gp.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
 }

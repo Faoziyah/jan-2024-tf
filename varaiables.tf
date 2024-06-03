@@ -28,3 +28,9 @@ variable "sg_ports" {
   default     = ["3000", "80", "443", "22"]
   type        = list(string)
 }
+
+variable "instance_type" {
+  description = "ubuntu instance type"
+  default     = "t2.micro"
+  type        = string
+}

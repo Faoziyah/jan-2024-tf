@@ -8,4 +8,5 @@ locals {
   ngw_name            = "${local.vpc_name}-ngw"
   sg_name             = "${local.vpc_name}-sg"
   sg_ports            = ["3000", "80", "443", "22"]
+  ubuntu_vm_name      = "web_server"
 }
