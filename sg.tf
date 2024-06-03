@@ -1,4 +1,4 @@
-resource "aws_security_group" "example" {
+resource "aws_security_group" "rds_sg" {
   name   = local.sg_name
   vpc_id = aws_vpc.vpc.id
 
